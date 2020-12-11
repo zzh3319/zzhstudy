@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<script>
+  /*   class promise {
+      constructor(exector) {
+        this.status = 'pendig';
+        this.reason = '';
+        this.data = null;
+        let that = this;
+  
+        function resolve(data) {
+          if (that.status == 'pendig') {
+            that.status = 'fullfilled';
+            that.data = data;
+          }
+        }
+  
+        function reject(reason) {
+          if (that.status == 'pendig') {
+            that.status = 'rejectting'
+            that.reason = reason;
+          }
+        }
+        exector(resolve, reject)
+      }
+      then(success, fail) {
+        if (this.status == 'fullfilled') {
+          success(this.data);
+        }
+  
+        if (this.status == 'rejectting') {
+          fail(this.reason);
+        }
+      }
+    }
+   */
+
+  function promise(exector) {
+    this.status = 'pendig';
+    this.reason = '';
+    this.data = null;
+    let that = this;
+    this.fullfillenFn = Function.prototype;
+    this.rejectedFn =  Function.prototype;
+
+    function resolve(data) {
+      if (that.status == 'pendig') {
+        that.status = 'fullfilled';
+        that.data = data;
+        that.fullfillenFn(data)
+      }
+    }
+
+    function reject(reason) {
+      if (that.status == 'pendig') {
+        that.status = 'rejectting'
+        that.reason = reason;
+        that.fullfillenFn(reason);
+      }
+    }
+    exector(resolve, reject)
+  }
+
+  promise.prototype.then = function (onFullfilled, onRejected) {
+    if (this.status == 'fullfilled') {
+      onFullfilled(this.data);
+    }
+
+    if (this.status == 'rejectting') {
+      onRejected(this.reason);
+    }
+    if (this.status == 'pendig') {
+      this.fullfillenFn = onFullfilled;
+      this.rejectedFn = onRejected;
+    }
+  }
+  new promise((resolve, reject) => {
+    setTimeout(function () {
+      resolve('111111111');
+    }, 2000)
+    // reject('error');
+  }).then(res => {
+    console.log(res);
+  }, err => {
+    console.log(err);
+  })
+</script>
+</body>
+
+</html>

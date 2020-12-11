@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    /* 正常来讲，上述代码会在 2 秒之后输出 data，但是我们实现的代码，并没有输入任何信息。这是为什么呢？
+ 
+原因很简单，因为我们的实现逻辑全是同步的。在上面实例化一个 promise 的构造函数时，我们是在 setTimeout 逻辑里才调用 resolve，也就是说，2 秒之后才会调用 resolve 方法，也才会去更改 promise 实例状态。而结合我们的实现，返回实现代码，then 方法中的 onfulfilled 执行是同步的，它在执行时 this.status 仍然为 pending，并没有做到「2 秒中之后再执行 onfulfilled」。
+ 
+那该怎么办呢？我们似乎应该在「合适」的时间才去调用 onfulfilled 方法，这个合适的时间就应该是开发者调用 resolve 的时刻，那么我们先在状态（status）为 pending 时，把开发者传进来的 onfulfilled 方法存起来，在 resolve 方法中再去执行即可：
+ */
+    function Promise(executor) {
+      this.status = 'pending'
+      this.value = null
+      this.reason = null
+      this.onFulfilledFunc = Function.prototype
+      this.onRejectedFunc = Function.prototype
+
+      const resolve = value => {
+        if (this.status === 'pending') {
+          this.value = value
+          this.status = 'fulfilled'
+
+          this.onFulfilledFunc(this.value)
+        }
+      }
+
+      const reject = reason => {
+        if (this.status === 'pending') {
+          this.reason = reason
+          this.status = 'rejected'
+          this.onRejectedFunc(this.reason)
+        }
+      }
+      executor(resolve, reject)
+    }
+
+    Promise.prototype.then = function (onfulfilled, onrejected) {
+      onfulfilled = typeof onfulfilled === 'function' ? onfulfilled : data => data
+      onrejected = typeof onrejected === 'function' ? onrejected : error => { throw error }
+
+      if (this.status === 'fulfilled') {
+        onfulfilled(this.value)
+      }
+      if (this.status === 'rejected') {
+        onrejected(this.reason)
+      }
+      if (this.status === 'pending') {
+        this.onFulfilledFunc = onfulfilled
+        this.onRejectedFunc = onrejected
+      }
+    }
+
+    let promise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('data')
+      }, 2000)
+    })
+
+    promise.then(data => {
+      console.log(data)
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <form id='myform' action="form_action.asp" method="get" target="nm_iframe">
+    <p>First name: <input type="text" name="fname" value="111111111111" /></p>
+    <!-- <p>Last name: <input type="text" name="lname" /></p> -->
+    <!-- <input type="submit" value="Submit" /> -->
+  </form>
+  <iframe id="id_iframe" name="nm_iframe" style="display:none;"></iframe>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    //1.给定 nums = [2, 7, 11, 15], target = 9,所以返回 [0, 1]；
+    let arr = [2, 1, 3, 4, 5, 6, 7];
+    let target = 9;
+    function getIndex() {
+      let map = {};
+      let length = arr.length;
+      for (let i = 0; i < length; i++) {
+        if (map[target - arr[i]] != undefined) {//判断差值是否有索引
+          return [map[target - arr[i]], i];
+        }
+        map[arr[i]] = i;//得到每列的索引
+      }
+    }
+    console.log(getIndex(arr, target))//[0, 1]
+  </script>
+</body>
+{2：0，
+7：1
+}
+
+</html>

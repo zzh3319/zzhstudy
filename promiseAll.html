@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+
+
+    function promiseAll(promises) {
+      // 做一个判断参数是否是数组
+      if (!Array.isArray(promises)) {
+        // 做一个判断参数是否是数组
+        throw new TypeError('The arguments should be an array!');
+      }
+      // 返回一个promise实例
+      return new Promise((resolve, reject) => {
+        let count = 0;
+        let newValues = [];  // 接收新的结果参数 建立一个伪数组
+        for (let i = 0; i < promises.length; i++) {
+          // 运用promise特性 只会有一个状态
+          Promise.resolve(promises[i])
+            .then(res => {
+              count++;
+              newValues[i] = res; // 把每次返回成功的数据添加到数组中
+              if (count === promises.length) { // 数据接收完成
+                resolve(newValues);
+              }
+            }, rej => reject(rej))
+
+        }
+
+      })
+    }
+    // promiseAll({})
+
+
+    let a = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('hello')
+      }, 1000)
+    })
+    let b = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // throw 'erro1123r';
+        resolve('world')
+      }, 100)
+    })
+  let race1=  Promise.race([a, b]);
+  race1.then(res => {
+      console.log(res);
+    }) 
+/*     const p = promiseAll([a, b]);
+    console.log(p);
+    p.then(res => {
+      console.log(res);
+    }) */
+
+
+
+    function promiseAll2(promises) {
+      if (!Array.isArray(promises)) {
+        throw new TypeError('非数组！');
+      }
+
+      let length = promises.length;
+      let count = 0;
+      let datas = [];
+      return new Promise((resolve, reject) => {
+        // throw new Error('test');
+        for (let i = 0; i < length; i++) {
+          Promise.resolve(promises[i]).then(res => {
+            count++;
+            datas.push(res);
+            if (count == length) {
+              resolve(datas);
+            }
+          }, err => {
+            reject(err);
+          })
+        }
+      })
+    }
+/* 
+   let p2= promiseAll2([a,b]);
+   console.log(p2);
+   p2.then(res=>{
+     console.log(res);
+     console.log(66666666666);
+   }).catch(err=>{
+     console.log(err);
+   }) */
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function Promise(executor) {
+      this.status = 'pending'
+      this.value = null
+      this.reason = null
+      this.onFulfilledFunc = Function.prototype
+      this.onRejectedFunc = Function.prototype
+
+      const resolve = value => {
+        console.log('2resolve');
+        if (this.status === 'pending') {
+          this.value = value
+          this.status = 'fulfilled'
+          this.onFulfilledFunc(this.value)
+        }
+
+      }
+
+      const reject = reason => {
+        console.log('2reject');
+        if (this.status === 'pending') {
+          this.reason = reason
+          this.status = 'rejected'
+          this.onRejectedFunc(this.reason)
+        }
+      }
+      console.log('1executor 回调');
+      executor(resolve, reject)
+    }
+
+    Promise.prototype.then = function (onfulfilled, onrejected) {
+      onfulfilled = typeof onfulfilled === 'function' ? onfulfilled : data => data
+      onrejected = typeof onrejected === 'function' ? onrejected : error => { throw error }
+
+      if (this.status === 'fulfilled') {
+        console.log('3fulfilled');
+        onfulfilled(this.value)
+      }
+      if (this.status === 'rejected') {
+        console.log('3rejected');
+        onrejected(this.reason)
+      }
+      if (this.status === 'pending') {
+        console.log('3pending');//异步pedding状态
+        debugger
+        this.onFulfilledFunc = onfulfilled
+        this.onRejectedFunc = onrejected
+      }
+    }
+
+    let promise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('data')
+      }, 2000)
+    })
+
+    promise.then(data => {
+      console.log(`1: ${data}`)
+    })
+    promise.then(data => {
+      console.log(`2: ${data}`)
+    })
+/*     let promise = new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve('data')
+          }, 2000)
+        })
+    
+        promise.then(data => {
+          console.log(data)
+        }) */
+    // let promise = new Promise((resolve, reject) => {
+    //   resolve('data')
+    //   reject('error')
+    // })
+
+    // promise.then(data => {
+    //   console.log(data)
+    // }, error => {
+    //   console.log(error)
+    // })
+  </script>
+</body>
+
+</html>

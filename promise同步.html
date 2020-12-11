@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function Promise(executor) {
+      this.status = 'pending'
+      this.value = null
+      this.reason = null
+      const resolve = value => {
+        if (this.status === 'pending') {
+          this.value = value
+          this.status = 'fulfilled'
+        }
+      }
+      const reject = reason => {
+        if (this.status === 'pending') {
+          this.reason = reason
+          this.status = 'rejected'
+        }
+      }
+      executor(resolve, reject)
+    }
+
+    Promise.prototype.then = function (onfulfilled, onrejected) {
+      onfulfilled = typeof onfulfilled === 'function' ? onfulfilled : data => data
+      onrejected = typeof onrejected === 'function' ? onrejected : error => { throw error }
+      if (this.status === 'fulfilled') {
+        onfulfilled(this.value)
+      }
+      if (this.status === 'rejected') {
+        onrejected(this.reason)
+      }
+    }
+
+    /* 我们看，在 resolve 和 reject 方法中，我们加入判断，只允许 promise 实例状态从 pending 改变为 fulfilled，或者从 pending 改变为 rejected。
+    
+    同时注意，这里我们对 Promise.prototype.then 参数 onfulfilled 和 onrejected 进行了判断，当实参不是一个函数类型时，赋予默认函数值。这时候的默认值不再是函数元 Function.prototype 了。为什么要这么更改？后面会有介绍。
+    
+    这样一来，我们的实现显然更加接近真实了。刚才的例子也可以跑通了： */
+
+    let promise = new Promise((resolve, reject) => {
+      resolve('data')
+      reject('error')
+    })
+
+    promise.then(data => {
+      console.log(data)
+    }, error => {
+      console.log(error)
+    })
+
+  </script>
+</body>
+
+</html>

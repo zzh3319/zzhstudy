@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // $(function () {
+    //测试数据
+    var tempArray = [1, 2, 3, 4, 5, 7, 8, 9, 10];
+    var targetNum = 6;
+    //二分法计算最近的数组下标
+    var binarySearch = function (tempArray, targetNum) {
+      var left = 0;
+      var right = tempArray.length;
+      while (left < right) {
+        var center = Math.floor((left + right) / 2);//1
+        // console.log( tempArray[center]);
+        debugger
+        if (targetNum > tempArray[center]) {//如果比中间值大 left=中间值后面一个
+          left = center + 1;
+        }
+        else if (targetNum < tempArray[center]) {//如果比中间值小 right=中间值前一个     6<7      前面一个所以是5
+          right = center - 1;
+        }
+        else {//如果等于中间值 那就是中间值
+          return center;
+        }
+      }
+      console.log(right, tempArray[right]);
+      // console.log([left], [right]);
+      // console.log(tempArray[left], tempArray[right]);
+    }
+
+    console.log(binarySearch(tempArray, targetNum));
+    // });
+  </script>
+</body>
+
+</html>
